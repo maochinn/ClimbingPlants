@@ -12,3 +12,5 @@ class ClimbingPlantPanel(bpy.types.Panel):
         layout = self.layout
         row = layout.row()
         row.operator('plant.seeding', text="Seeding")
+        row = layout.row()
+        row.operator('plant.growth', text="growing")

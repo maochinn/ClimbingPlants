@@ -16,12 +16,13 @@ bl_info = {
 import bpy
 
 from . Plant_Panel import ClimbingPlantPanel
-from . Plant_Operator import PlantSeeding
+from . Plant_Operator import (PlantSeeding, PlantGrowth)
+from mathutils import Vector, Euler, Quaternion
 
-bpy.types.Scene.plant_max_scale = bpy.props.FloatVectorProperty(default=(0.1, 0.3, 0.3))
-bpy.types.Scene.plant_delta_scale = bpy.props.FloatVectorProperty(default=(0.01, 0.03, 0.03))
+bpy.types.Scene.plant_max_scale = Vector((0.1, 0.1, 0.3))
+bpy.types.Scene.plant_delta_scale = Vector((0.01, 0.01, 0.03))
 
-classes = (ClimbingPlantPanel, PlantSeeding)
+classes = (ClimbingPlantPanel, PlantSeeding, PlantGrowth)
 
 register, unregister = bpy.utils.register_classes_factory(classes)
 

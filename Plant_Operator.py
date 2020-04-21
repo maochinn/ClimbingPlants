@@ -50,7 +50,7 @@ Plant_object = PointerProperty(
 # object bpy.types.Object
 #####
 def createParticleProperty(
-    context, particle, sa_strength, pr_strength, depth, plant_type, childs=[], parent=None):
+    context, particle, sa_strength, pr_strength, depth, plant_type, childs=[], parent=[]):
     context.view_layer.objects.active = particle
     if parent == None:
         parent = particle
@@ -61,32 +61,32 @@ def createParticleProperty(
     item = eval("context.%s" % data_path)
 
     rna_idprop_ui_create(
-        item, "Surface Adaption",
+        item, "Surface_Adaption",
         default     =sa_strength,
         description =surface_adaption_strength[1]['description'],
         soft_min    =surface_adaption_strength[1]['soft_min'],
         soft_max    =surface_adaption_strength[1]['soft_max'], )
     rna_idprop_ui_create(
-        item, "Phototropism Response",
+        item, "Phototropism_Response",
         default     =pr_strength,
         description =phototropism_response_strength[1]['description'],
         soft_min    =phototropism_response_strength[1]['soft_min'],
         soft_max    =phototropism_response_strength[1]['soft_max'], )
     rna_idprop_ui_create(
-        item, "Plant Depth",
+        item, "Plant_Depth",
         default     =depth,
         description =plant_depth[1]['description'],
         soft_min    =plant_depth[1]['soft_min'],
         soft_max    =plant_depth[1]['soft_max'], )
     rna_idprop_ui_create(
-        item, "Plant type",
+        item, "Plant_Type",
         default     =plant_type)
     rna_idprop_ui_create(
         item, "childs",
         default     =[])
     rna_idprop_ui_create(
         item, "parent",
-        default     =parent)
+        default     =[parent])
 
 
 
@@ -115,6 +115,12 @@ class PlantSeeding(Operator):
     def execute(self, context):
         bpy.ops.mesh.primitive_uv_sphere_add(location=self.location)
         seed = context.active_object
+        # seed.scale = bpy.types.Scene.plant_delta_scale
+        default = bpy.types.Scene.plant_delta_scale
+        bpy.ops.transform.resize(value=default)
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.transform.translate(value=(0,0,default.z))
+        bpy.ops.object.mode_set(mode='OBJECT')
         seed.name = "Seed"
 
         createParticleProperty(
@@ -125,6 +131,27 @@ class PlantSeeding(Operator):
             self.depth,
             self.plant_type)
         return {'FINISHED'}
+
+def grow(particle):
+    a, b, c = particle.scale
+
+    max_a, max_b, max_c = bpy.types.Scene.plant_max_scale
+    delta_a, delta_b, delta_c = bpy.types.Scene.plant_delta_scale
+    
+    a += delta_a
+    b += delta_b
+    c += delta_c
+
+    if (a > max_a):
+        a = max_a
+    if (b > max_b):
+        b = max_b
+    if (c > max_c):
+        c = max_c
+
+    particle.scale = (a, b, c)
+
+    bpy.ops.anim.keyframe_insert_menu(type='Scaling')
 
 class PlantGrowth(Operator):
     bl_idname = "plant.growth"
@@ -137,8 +164,8 @@ class PlantGrowth(Operator):
     @classmethod
     def poll(cls, context):
         
-        if ('Plant Type' in context.active_object.keys()):
-            if (context.active_object['Plant Type'] == SEED):
+        if (context.active_object and 'Plant_Type' in context.active_object.keys()):
+            if (context.active_object['Plant_Type'] == 'SEED'):
                 return True
 
         return False
@@ -150,6 +177,13 @@ class PlantGrowth(Operator):
         return self.execute(context)
         
     def execute(self, context):
-        seed = context.active
+        seed = context.active_object
+
+        context.scene.frame_current += 1
+        grow(seed)
+
+        return {'FINISHED'}
+
+        
 
         
