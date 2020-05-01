@@ -1,3 +1,4 @@
+import random
 import bpy
 
 from bpy.types import Operator
@@ -152,6 +153,13 @@ def grow(particle):
     particle.scale = (a, b, c)
 
     bpy.ops.anim.keyframe_insert_menu(type='Scaling')
+
+    if (particle['childs'] == [] and c >= max_c):
+        rand = random.random()
+        rand = 1 - rand
+        if (rand > bpy.types):
+
+
 
 class PlantGrowth(Operator):
     bl_idname = "plant.growth"

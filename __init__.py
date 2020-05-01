@@ -21,6 +21,7 @@ from mathutils import Vector, Euler, Quaternion
 
 bpy.types.Scene.plant_max_scale = Vector((0.1, 0.1, 0.3))
 bpy.types.Scene.plant_delta_scale = Vector((0.01, 0.01, 0.03))
+bpy.types.Scene.plant_branch_probablity = 0.0002
 
 classes = (ClimbingPlantPanel, PlantSeeding, PlantGrowth)
 
