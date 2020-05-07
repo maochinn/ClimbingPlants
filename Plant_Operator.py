@@ -181,7 +181,8 @@ class PlantGrowth(Operator):
                 oclusion = lights[0].data.energy/(radial*radial) # not the correct way
                 v_l.normalize()
                 a_p = v_l.cross(v_f)
-                alpha_p = (1 - oclusion) * eta * delta_t
+                # alpha_p = (1 - oclusion) * eta * delta_t
+                alpha_p = -eta * delta_t
 
             # particle.rotation_quaternion = particle.rotation_quaternion @ Quaternion(a_a[:], alpha_a) @ Quaternion(a_p[:], alpha_p)
             particle.rotation_euler = (particle.rotation_euler.to_quaternion() @ Quaternion(a_a[:], alpha_a) @ Quaternion(a_p[:], alpha_p)).to_euler()
@@ -226,7 +227,7 @@ class PlantGrowth(Operator):
         seed = context.active_object
 
         context.scene.frame_current += context.scene.frame_step
-        self.grow(context, seed, context.scene.frame_step)
+        self.grow(context, seed, context.scene.frame_step/context.scene.render.fps)
 
         context.view_layer.objects.active = seed
         seed.select_set(True)
