@@ -21,8 +21,11 @@ from mathutils import Vector, Euler, Quaternion
 
 # size is dimension
 bpy.types.Scene.plant_max_size = Vector((0.2, 0.2, 0.6))
-bpy.types.Scene.plant_delta_size = Vector((0.01, 0.01, 0.03))
+bpy.types.Scene.plant_delta_size = Vector((0.01, 0.01, 0.05))
 bpy.types.Scene.plant_branch_probablity = 0.0002
+
+#
+bpy.types.Object.velocity = bpy.props.FloatVectorProperty()
 
 classes = (ClimbingPlantPanel, PlantSeeding, PlantGrowth)
 
