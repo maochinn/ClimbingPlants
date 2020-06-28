@@ -19,18 +19,14 @@ def createPlantParticle(context, name, location, orientation, plant_type, sa_str
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.transform.translate(value=(0,0,default.z*0.5))
     bpy.ops.object.mode_set(mode='OBJECT')
-    context.active_object.rotation_euler = orientation
+
+    particle.rotation_mode = 'QUATERNION'
+    # context.active_object.rotation_euler = orientation
+    particle.rotation_quaternion = orientation
     particle.name = name
 
-    # set parent
-    if(parent != None):
-        bpy.ops.object.select_all(action='DESELECT')
-        particle.select_set(True)
-        context.view_layer.objects.active = parent
-        bpy.ops.object.parent_set()
-
     # find all obstacle to attract particle
-    obstacles = [obj for obj in context.scene.objects if ParticleType[1]['name'] in obj.keys() and obj[ParticleType[1]['name']] == 'OBSTACLE']
+    obstacles = [obj for obj in context.scene.objects if 'Type' in obj.keys() and obj['Type'] == 'OBSTACLE']
 
     createParticleProperty(
         context,
@@ -38,7 +34,17 @@ def createPlantParticle(context, name, location, orientation, plant_type, sa_str
         sa_strength, 
         pr_strength,
         plant_type,
-        closestAnchor(getParticleCenter(particle), obstacles))
+        closestAnchor(getParticleCenter(particle), obstacles),
+        parent)
+    
+    particle.position = Vector(0, 0, default.z*0.5)
+    particle.velocity = (0, 0, 0)
+    
+    particle.orientation = particle.rotation_quaternion
+    particle.angular_velocity = (0, 0, 0)
+
+    particle.rest_position = particle.position
+    particle.rest_orientation = particle.orientation
 
     return particle
 
@@ -48,7 +54,7 @@ def getParticleMainAxis(particle):
 
 # return particle mass of center in world space
 def getParticleCenter(particle):
-    return particle.matrix_world.to_translation() + particle.dimensions[2]*0.5 * getParticleMainAxis(particle)
+    return particle.matrix_world.to_translation() + particle.scale[2] * getParticleMainAxis(particle)
 
 def setParticleDimension(particle, dimension):
     scale = (
