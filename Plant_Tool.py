@@ -37,8 +37,8 @@ def createPlantParticle(context, name, location, orientation, plant_type, sa_str
         closestAnchor(getParticleCenter(particle), obstacles),
         parent)
     
-    particle.position = Vector(0, 0, default.z*0.5)
-    particle.velocity = (0, 0, 0)
+    particle.position = Vector((0, 0, default.z*0.5))
+    particle.velocity = Vector((0, 0, 0))
     
     particle.orientation = particle.rotation_quaternion
     particle.angular_velocity = (0, 0, 0)
